@@ -28,14 +28,10 @@ command :build do |c|
     FileUtils.mkdir_p(@destination) unless File.directory?(@destination)
 
     determine_workspace_or_project! unless @workspace || @project
-
-    determine_configuration! unless @configuration
-    say_error "Configuration #{@configuration} not found" and abort unless (@xcodebuild_info.build_configurations.include?(@configuration) rescue false)
-
     determine_scheme! unless @scheme
     say_error "Scheme #{@scheme} not found" and abort unless (@xcodebuild_info.schemes.include?(@scheme) rescue false)
 
-    say_warning "Building \"#{@workspace || @project}\" with Scheme \"#{@scheme}\" and Configuration \"#{@configuration}\"\n" unless options.quiet
+    say_warning "Building \"#{@workspace || @project}\" with Scheme \"#{@scheme}\"\n" unless options.quiet
 
     log "xcodebuild", (@workspace || @project)
 
@@ -121,18 +117,4 @@ command :build do |c|
     end
   end
 
-  def determine_configuration!
-    configurations = @xcodebuild_info.build_configurations rescue []
-    if configurations.nil? or configurations.empty? or configurations.include?("Debug")
-      @configuration = "Debug"
-    elsif configurations.length == 1
-      @configuration = configurations.first
-    end
-
-    if @configuration
-      say_warning "Configuration was not passed, defaulting to #{@configuration}"
-    else
-      @configuration = choose "Select a configuration:", *configurations
-    end
-  end
 end
