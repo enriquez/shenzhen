@@ -33,10 +33,6 @@ command :build do |c|
     determine_scheme! unless @scheme
     say_error "Scheme #{@scheme} not found" and abort unless (@xcodebuild_info.schemes.include?(@scheme) rescue false)
 
-    say_warning "Building \"#{@workspace || @project}\" with Scheme \"#{@scheme}\"\n" unless options.quiet
-
-    log "xcodebuild", (@workspace || @project)
-
     @configuration = options.configuration
     
     flags = []
@@ -55,6 +51,7 @@ command :build do |c|
     end
     
     say_warning "Building \"#{@workspace || @project}\" with Scheme \"#{@scheme}\" and Configuration \"#{@configuration}\"\n" unless options.quiet
+    log "xcodebuild", (@workspace || @project)
 
     actions = []
     actions << :clean unless options.clean == false
