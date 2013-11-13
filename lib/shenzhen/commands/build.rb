@@ -31,12 +31,6 @@ command :build do |c|
 
     determine_workspace_or_project! unless @workspace || @project
 
-    determine_configuration! unless @configuration
-    say_error "Configuration #{@configuration} not found" and abort unless (@xcodebuild_info.build_configurations.include?(@configuration) rescue false)
-
-    determine_scheme! unless @scheme
-    say_error "Scheme #{@scheme} not found" and abort unless (@xcodebuild_info.schemes.include?(@scheme) rescue false)
-
     @configuration = options.configuration
     
     flags = []
@@ -109,31 +103,6 @@ command :build do |c|
       else
         @workspace = choose "Select a workspace:", *workspaces
       end
-    end
-  end
-
-  def determine_scheme!
-    say_error "No schemes found in Xcode project or workspace" and abort unless @xcodebuild_info.schemes
-
-    if @xcodebuild_info.schemes.length == 1
-      @scheme = @xcodebuild_info.schemes.first
-    else
-      @scheme = choose "Select a scheme:", *@xcodebuild_info.schemes
-    end
-  end
-
-  def determine_configuration!
-    configurations = @xcodebuild_info.build_configurations rescue []
-    if configurations.nil? or configurations.empty? or configurations.include?("Debug")
-      @configuration = "Debug"
-    elsif configurations.length == 1
-      @configuration = configurations.first
-    end
-
-    if @configuration
-      say_warning "Configuration was not passed, defaulting to #{@configuration}"
-    else
-      @configuration = choose "Select a configuration:", *configurations
     end
   end
 end
